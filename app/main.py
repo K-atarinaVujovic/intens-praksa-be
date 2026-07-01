@@ -10,7 +10,7 @@ ALLOWED_ORIGIN = os.getenv("FRONTEND_URL", "http://localhost:3000")
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ALLOWED_ORIGIN],
+    allow_origins=["*"],
     allow_methods=["*"],
 )
 
