@@ -26,6 +26,7 @@ def increase_counter() -> int:
             cur.execute("UPDATE counter SET count = count + 1 WHERE id = 1")
             cur.execute("SELECT count FROM counter WHERE id = 1")
             count = cur.fetchone()[0]
+            cur.execute("SELECT pg_notify('counter_updates', %s)", (str(count),))
         conn.commit()
         return count
     finally:
@@ -36,6 +37,7 @@ def restart_counter() -> int:
     try:
         with conn.cursor() as cur:
             cur.execute("UPDATE counter SET count = 0 WHERE id = 1")
+            cur.execute("SELECT pg_notify('counter_updates', '0')")
         conn.commit()
         return 0
     finally:
