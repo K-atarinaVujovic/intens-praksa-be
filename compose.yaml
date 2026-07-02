@@ -1,0 +1,10 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app/db:/app/app/db
+    environment:
+      FRONTEND_URL: http://localhost:3000
