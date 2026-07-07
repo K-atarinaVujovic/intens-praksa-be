@@ -4,8 +4,12 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  IMAGE_NAME: intens-praksa-be-server:${{github.sha}}
+
 jobs:
   build_to_minikube:
+    name: Build image to minikube
     runs-on: laptop
     steps:
     - uses: actions/checkout@v4
@@ -14,6 +18,35 @@ jobs:
       run: | 
         minikube -p minikube docker-env --shell powershell | Invoke-Expression
         $tag = $env:GITHUB_SHA
-        docker build . --file Dockerfile --tag "intens-praksa-be-server:$tag"
+        docker build . --file Dockerfile --tag "$env:IMAGE_NAME"
 
-    
+  update_infra_repo:
+    name: Change image name in infra repo 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout infra repo
+      uses: actions/checkout@v4
+      with:
+        repository: intens-praksa/intens-praksa-infra
+        token: ${{secrets.INFRA_REPO_PAT}}
+        path: infra
+
+    - name: Install yq
+      run: |
+        sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+        sudo chmod +x /usr/local/bin/yq
+
+    - name: Update image tag
+      working-directory: infra/intens
+      run: |
+        yq -i '.services.intens-be.image = strenv(IMAGE_NAME)' values.yaml
+
+    - name: Push to infra repo
+      working-directory: infra
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update intens-praksa-be image value"
+        git push
+      
