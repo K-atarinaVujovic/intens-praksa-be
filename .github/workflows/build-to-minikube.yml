@@ -1,0 +1,21 @@
+name: 'Build to minikube'
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: laptop
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Point docker commands to minikube
+      run: minikube -p minikube docker-env --shell powershell | Invoke-Expression
+
+    - name: Build the Docker image
+      run: | 
+        $tag = $env:GITHUB_SHA
+        docker build . --file Dockerfile --tag "intens-praksa-be-server:$tag"
+
+    
