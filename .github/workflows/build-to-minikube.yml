@@ -23,6 +23,7 @@ jobs:
   update_infra_repo:
     name: Change image name in infra repo 
     runs-on: ubuntu-latest
+    needs: build_to_minikube
     steps:
     - name: Checkout infra repo
       uses: actions/checkout@v4
