@@ -37,9 +37,9 @@ async def restart():
     count = restart_counter()
     return {"count": count}
 
-@router.get("/ha")
-async def ha():
-    return "ha";
+@router.get("/hah")
+async def hah():
+    return "hah";
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
