@@ -2,7 +2,7 @@ name: 'Build to minikube'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 env:
   IMAGE_NAME: intens-praksa-be-server:${{github.sha}}
@@ -31,6 +31,7 @@ jobs:
         repository: intens-praksa/intens-praksa-infra
         token: ${{secrets.INFRA_REPO_PAT}}
         path: infra
+        ref: ${{ github.ref_name }}
 
     - name: Install yq
       run: |
@@ -49,5 +50,5 @@ jobs:
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add .
         git commit -m "Update intens-praksa-be image value"
-        git push
+        git push origin HEAD:${{ github.ref_name }}
       
